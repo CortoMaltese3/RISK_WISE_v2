@@ -1,16 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+
 import "./i18nConfig";
+import "./index.css";
 import "leaflet/dist/leaflet.css";
 
-import { CacheProvider } from "@emotion/react";
-import createEmotionCache from "./emotionCache";
-
-const cache = createEmotionCache();
+import { StyledEngineProvider } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <CacheProvider value={cache}>
+  <StyledEngineProvider injectFirst>
+    <CssBaseline />
     <App />
-  </CacheProvider>
+  </StyledEngineProvider>
 );

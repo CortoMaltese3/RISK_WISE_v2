@@ -46,12 +46,6 @@ export default defineConfig({
     dedupe: [
       "react",
       "react-dom",
-      "@emotion/react",
-      "@emotion/styled",
-      "@emotion/cache",
-      "@emotion/utils",
-      "@emotion/serialize",
-      "@emotion/use-insertion-effect-with-fallbacks"
     ]
   },
   // Prebundle these to stabilize dependency graphs
@@ -59,8 +53,6 @@ export default defineConfig({
     include: [
       "react",
       "react-dom",
-      "@emotion/react",
-      "@emotion/styled",
       "@mui/material",
       "@mui/icons-material"
     ]
