@@ -1,4 +1,4 @@
-# RISK WISE
+# RISK WISE v2
 
 ## Overview
 
@@ -8,13 +8,13 @@ The “Enhancing Risk Assessments (ERA) for improved country risk financing stra
 2. Analyzing the impact of hazards on non-economic impacts (e.g., access to health and education).
    Additionally, the project aims to enable the dynamic application of CLIMADA by partner institutions through an easy-to-use and accessible graphical user interface (GUI).
 
-RISK WISE is a Graphical User Interface (GUI) for [CLIMADA](https://wcr.ethz.ch/research/climada.html). RISK WISE encompass CLIMADA’s full functionality, including the cost-benefit analyses of adaptation measures and new features developed within the ERA project, in order to enable local project partners to use CLIMADA independently.
+RISK WISE v2 is a Graphical User Interface (GUI) for [CLIMADA](https://wcr.ethz.ch/research/climada.html). RISK WISE v2 encompass CLIMADA’s full functionality, including the cost-benefit analyses of adaptation measures and new features developed within the ERA project, in order to enable local project partners to use CLIMADA independently.
 
 ## Dependencies and limitations
 
 1. Physical limitations
-   RISK WISE is a standalone, portable desktop application designed for ease of use. It is delivered as a self-contained folder containing all the necessary files, including an executable for starting the application. Double-clicking on this executable file will launch the application. No installation or special prerequisites are required. However, to ensure optimal performance, the following minimum system requirements are recommended:
-   CPU: 1GHz dual core. Although RISK WISE is not heavily CPU-intensive, tasks like impact calculations, map rendering, and report generation may increase CPU usage.
+   RISK WISE v2 is a standalone, portable desktop application designed for ease of use. It is delivered as a self-contained folder containing all the necessary files, including an executable for starting the application. Double-clicking on this executable file will launch the application. No installation or special prerequisites are required. However, to ensure optimal performance, the following minimum system requirements are recommended:
+   CPU: 1GHz dual core. Although RISK WISE v2 is not heavily CPU-intensive, tasks like impact calculations, map rendering, and report generation may increase CPU usage.
 
 - RAM: 8GB. This is crucial as the application uses Python’s Pandas library for data handling, performing in-memory analytics. When processing large datasets, such as a 10GB dataset, the application requires at least an equivalent amount of free memory. This is because Python performs many calculations in memory, which can significantly increase the overall memory requirement.
 - Operating System: Microsoft Windows 10.
@@ -23,7 +23,7 @@ RISK WISE is a Graphical User Interface (GUI) for [CLIMADA](https://wcr.ethz.ch/
   These requirements are typical for a general-use laptop/PC.
 
 2. CLIMADA API dependency
-   RISK WISE frequently communicates with CLIMADA's API to fetch and validate datasets, among other tasks. API availability is crucial if the API is not accessible, significant functionality issues will arise. RISK WISE uses .hdf5 files for Exposure and Hazard data, obtainable from sources [ETH-Zurich Research Collection](https://www.research-collection.ethz.ch/) and [NASA’s Socioeconomic Data and Applications Center (sedac)](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4/sets/browse). The application's Python backend fetches these files. In their absence, users can provide the necessary parameters, and the application will find, download, and store the datasets.
+   RISK WISE v2 frequently communicates with CLIMADA's API to fetch and validate datasets, among other tasks. API availability is crucial if the API is not accessible, significant functionality issues will arise. RISK WISE v2 uses .hdf5 files for Exposure and Hazard data, obtainable from sources [ETH-Zurich Research Collection](https://www.research-collection.ethz.ch/) and [NASA’s Socioeconomic Data and Applications Center (sedac)](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4/sets/browse). The application's Python backend fetches these files. In their absence, users can provide the necessary parameters, and the application will find, download, and store the datasets.
 
 ## Setup and Running the Application
 
@@ -72,7 +72,7 @@ RISK WISE is a Graphical User Interface (GUI) for [CLIMADA](https://wcr.ethz.ch/
    npm run dev
    ```
 
-6. **Start the RISK WISE application locally**:
+6. **Start the RISK WISE v2 application locally**:
    The application is bundled using [electron-builder](https://www.electron.build/). To start the full application locally, navigate to the root directory of the app and using your terminal or command prompt, run the following command:
    ```sh
    npm run start:electron
@@ -189,13 +189,13 @@ git tag -a v0.5.5 -m "RISK WISE version 0.5.5" -m "
 
 # Working with Forks and Pull Requests
 
-If you're contributing to RISK WISE, it’s recommended to fork the repository and follow the steps below to make changes, ensure your contributions are tested, and submit them for review by the maintainers. This process helps keep the original repository clean and organized.
+If you're contributing to RISK WISE v2, it’s recommended to fork the repository and follow the steps below to make changes, ensure your contributions are tested, and submit them for review by the maintainers. This process helps keep the original repository clean and organized.
 
 ---
 
 ## 1. Fork the Repository
 
-1. Go to the GitHub repository for RISK WISE.
+1. Go to the GitHub repository for RISK WISE v2.
 2. Click the **Fork** button in the top-right corner of the repository page.
 3. This will create a copy of the repository under your GitHub account.
 

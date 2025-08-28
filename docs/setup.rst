@@ -46,7 +46,7 @@ For Developers
 
       npm run dev
 
-6. **Start the RISK WISE application locally**:
+6. **Start the RISK WISE v2 application locally**:
 
    .. code-block:: sh
 

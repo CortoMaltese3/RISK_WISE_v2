@@ -1,9 +1,9 @@
 {
   "name": "riskwise",
-  "productName": "RISK WISE",
+  "productName": "RISK WISE v2",
   "description": "Desktop GUI application for fully probabilistic climate risk assessment tool Climada. Provides a framework for users to combine exposure, hazard and vulnerability or impact data to calculate risk.",
   "author": "Sword Group <georgios.kalomalos@sword-group.com>",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "main": "build/electron.js",
   "homepage": ".",
@@ -61,7 +61,7 @@
   "build": {
     "asar": false,
     "appId": "com.unu.riskwise",
-    "productName": "RISK WISE",
+    "productName": "RISK WISE v2",
     "files": [
       "build/**/*",
       "backend/**/*",
