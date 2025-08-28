@@ -64,17 +64,23 @@ RISK WISE is a Graphical User Interface (GUI) for [CLIMADA](https://wcr.ethz.ch/
    npm install
    ```
 
-5. **Start the ReactJS frontend locally**:
-   To start the ReactJS frontend locally, without the connection to the backend, use:
+5. **Start the React frontend locally**:
+   The project uses [Vite](https://vitejs.dev/) instead of Create React App [deprecated].
+   To start the frontend with hot module reloading:
 
    ```sh
-   npm start
+   npm run dev
    ```
 
 6. **Start the RISK WISE application locally**:
    The application is bundled using [electron-builder](https://www.electron.build/). To start the full application locally, navigate to the root directory of the app and using your terminal or command prompt, run the following command:
    ```sh
    npm run start:electron
+   ```
+
+   To avoid rebuilding the application if already built, use:
+   ```sh
+   npm run quickstart
    ```
 
 ### Build a new executable
