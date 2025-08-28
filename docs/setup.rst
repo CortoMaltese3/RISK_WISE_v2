@@ -36,28 +36,42 @@ For Developers
 
    .. code-block:: sh
 
-      npm start
+      npm install
 
-5. **Start the RISK WISE application locally**:
+5. **Start the React frontend locally**:
+   The project uses Vite instead of Create React App.
+   To start the frontend with hot module reloading:
+
+   .. code-block:: sh
+
+      npm run dev
+
+6. **Start the RISK WISE application locally**:
 
    .. code-block:: sh
 
       npm run start:electron
 
-6. **Build a new executable**:
-   To create a new executable for the application, navigate to the root directory of the app and using your terminal or command prompt, run the following command:
+   To start Electron without rebuilding (when already built):
+
+   .. code-block:: sh
+
+      npm run quickstart
+
+7. **Build a new executable**:
+   To create a new executable for the application, run:
 
    .. code-block:: sh
 
       npm run build
 
-   This will create a new executable at dist/[ version ]
+   This runs the Vite build process and generates output in the ``build/`` directory, which is then packaged by Electron.
 
-7. **Build a new Microsoft Windows Installer**:
-   To create a new Microsoft Windows Installer for the application, navigate to the root directory of the app and using your terminal or command prompt, run the following command:
+8. **Build a new Microsoft Windows Installer**:
+   To create a new Microsoft Windows Installer for the application, run:
 
    .. code-block:: sh
 
       npm run dist
 
-   This will create a new Microsoft Windows Installer at dist/[ version ]      
+   This will create a new Microsoft Windows Installer at ``dist/[version]``
