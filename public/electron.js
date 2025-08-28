@@ -59,7 +59,7 @@ const createLoaderWindow = () => {
     autoHideMenuBar: true,
     icon: iconPath,
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: false,
     },
   });
 
@@ -99,6 +99,7 @@ const createMainWindow = () => {
     show: false,
     webPreferences: {
       contextIsolation: true,
+      sandbox: true,
       enableRemoteModule: false,
       preload: path.join(basePath, "build", "preload.js"),
       webSecurity: true,

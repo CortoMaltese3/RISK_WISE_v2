@@ -2,51 +2,36 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: "./",
   plugins: [react()],
   publicDir: "public",
+  resolve: {
+    alias: { "@": path.resolve(__dirname, "src") },
+  },
   build: {
     outDir: "build",
     emptyOutDir: true,
-    sourcemap: true,
+    // Only generate sourcemaps in dev builds to help with debugging,
+    //  but we not ship .map in prod
+    sourcemap: mode === "development",
     assetsDir: "assets",
+    // Target modern JS features supported by Electron’s Chromium (smaller, faster output)
+    target: "es2022",
+    // Bundle all CSS into one file (avoids multiple requests under file:// in Electron)
+    cssCodeSplit: false,
+    // Use esbuild for minification (fast + safe default)
+    minify: "esbuild",
+    // Raise chunk size warning threshold
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
+        // Force all node_modules deps into a single vendor.js file
+        // → fewer file:// requests, faster startup in Electron
         manualChunks(id) {
-          if (!id.includes("node_modules")) return;
-
-          // Group React + Emotion + MUI together to avoid init order issues
-          if (
-            id.includes("react") ||
-            id.includes("scheduler") ||
-            id.includes("@emotion") ||
-            id.includes("@mui")
-          ) {
-            return "vendor-ui";
-          }
-
-          if (
-            id.includes("chart.js") ||
-            id.includes("react-chartjs-2") ||
-            id.includes("chartjs-adapter")
-          )
-            return "vendor-chart";
-
-          if (id.includes("leaflet") || id.includes("react-leaflet")) return "vendor-leaflet";
-
-          if (id.includes("i18next") || id.includes("react-i18next")) return "vendor-i18n";
-
-          return "vendor";
+          if (id.includes("node_modules")) return "vendor";
         },
       },
     },
   },
-  resolve: {
-    alias: { "@": path.resolve(__dirname, "src") },
-  },
-  // Prebundle these to stabilize dependency graphs
-  optimizeDeps: {
-    include: ["react", "react-dom", "@mui/material", "@mui/icons-material"],
-  },
-});
+}));
