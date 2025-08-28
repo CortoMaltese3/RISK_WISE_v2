@@ -12,7 +12,7 @@ import sys
 sys.path.insert(0, os.path.abspath("../backend"))
 
 # -- Project information -----------------------------------------------------
-project = "RISK WISE"
+project = "RISK WISE v2"
 copyright = "2024, [SWORD] Georgios Kalomalos"
 author = "[SWORD] Georgios Kalomalos"
 release = "0.6.4"
