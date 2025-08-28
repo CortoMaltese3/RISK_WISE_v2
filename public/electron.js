@@ -26,7 +26,8 @@ if (!app.requestSingleInstanceLock()) {
   });
 }
 
-app.commandLine.appendSwitch("in-process-gpu");
+// Removed: avoid forcing GPU flags unless strictly needed.
+// app.commandLine.appendSwitch("in-process-gpu");
 if (app.getGPUFeatureStatus().gpu_compositing.includes("disabled")) {
   app.disableHardwareAcceleration();
 }
@@ -112,7 +113,6 @@ const createMainWindow = () => {
 
   mainWindow.show();
   mainWindow.maximize();
-  // mainWindow.loadURL(`file://${path.join(basePath, "build", "index.html")}`);
   mainWindow.loadFile(path.join(basePath, "build", "index.html"));
   if (isDevelopmentEnv()) {
     mainWindow.webContents.openDevTools();
@@ -340,7 +340,7 @@ app.on("ready", () => {
 
 autoUpdater.setFeedURL({
   provider: "generic",
-  url: "https://ath-git.swordgroup.lan/unu/climada-unu/-/releases",
+  url: "https://github.com/CortoMaltese3/RISK_WISE_v2/releases",
 });
 
 // Listen for update-available event

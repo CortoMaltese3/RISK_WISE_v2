@@ -26,35 +26,27 @@ export default defineConfig({
             return "vendor-ui";
           }
 
-          if (id.includes("chart.js") || id.includes("react-chartjs-2") || id.includes("chartjs-adapter"))
+          if (
+            id.includes("chart.js") ||
+            id.includes("react-chartjs-2") ||
+            id.includes("chartjs-adapter")
+          )
             return "vendor-chart";
 
-          if (id.includes("leaflet") || id.includes("react-leaflet"))
-            return "vendor-leaflet";
+          if (id.includes("leaflet") || id.includes("react-leaflet")) return "vendor-leaflet";
 
-          if (id.includes("i18next") || id.includes("react-i18next"))
-            return "vendor-i18n";
+          if (id.includes("i18next") || id.includes("react-i18next")) return "vendor-i18n";
 
           return "vendor";
-        }
-      }
-    }
+        },
+      },
+    },
   },
   resolve: {
     alias: { "@": path.resolve(__dirname, "src") },
-    // Ensure single instances at runtime
-    dedupe: [
-      "react",
-      "react-dom",
-    ]
   },
   // Prebundle these to stabilize dependency graphs
   optimizeDeps: {
-    include: [
-      "react",
-      "react-dom",
-      "@mui/material",
-      "@mui/icons-material"
-    ]
-  }
+    include: ["react", "react-dom", "@mui/material", "@mui/icons-material"],
+  },
 });
