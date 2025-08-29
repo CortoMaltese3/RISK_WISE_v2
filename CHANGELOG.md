@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.2] - 2025-08-29
+
+### Changed
+- Unified logging to per-user path: `app.getPath("userData")/logs/app.log` using `electron-log` with rotation (1MB).
+- Electron now initializes `electron-log` and uses `resolvePathFn` to set the log file.
+- Renderer console messages are piped into the unified log via `console-message`.
+- Python reads `LOG_DIR` from environment (set by Electron) and falls back to `BASE_DIR/logs`.
+
+### Removed
+- Persistent `stdout` logger in `createPythonProcess()` that echoed all Python stdout; keeps per-request parsing intact to avoid logging large JSON payloads.
+
+### Fixed
+- Logs persist across auto-updates (no longer written under `resources/app`).
+- Reduced log noise from large backend responses.
+
+### Contributors
+- @CortoMaltese3
+
 ## [2.0.1] - 2025-08-29
 
 ### Added

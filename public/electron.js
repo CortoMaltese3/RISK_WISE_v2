@@ -45,6 +45,7 @@ app.whenReady().then(async () => {
   log.info("[electron] app start, version:", app.getVersion());
   log.info("[electron] userData:", app.getPath("userData"));
   log.info("[electron] appPath:", app.getAppPath());
+  log.info("[electron] update config path:", autoUpdater.updateConfigPath);
 
   createLoaderWindow();
 
@@ -60,7 +61,19 @@ app.whenReady().then(async () => {
   loaderWindow.close();
   loaderWindow = null;
 
-  if (!isDevelopmentEnv()) autoUpdater.checkForUpdatesAndNotify();
+  if (!isDevelopmentEnv()) {
+    try {
+      autoUpdater.setFeedURL({
+        provider: "github",
+        owner: "CortoMaltese3",
+        repo: "RISK_WISE_v2",
+        releaseType: "release",
+      });
+    } catch {} // ignore if already configured via app-update.yml
+    autoUpdater
+      .checkForUpdatesAndNotify()
+      .catch((err) => log.error("[electron] updater check failed:", err));
+  }
   createMainWindow();
 });
 
@@ -202,10 +215,6 @@ const createPythonProcess = () => {
 
     py.on("error", (error) => {
       log.error("[electron] python spawn error:", error);
-    });
-
-    py.stderr.on("data", (data) => {
-      log.error(`[python] ${data.toString().trim()}`);
     });
 
     py.stderr.on("data", (data) => {
