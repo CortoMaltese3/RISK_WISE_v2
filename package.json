@@ -3,7 +3,7 @@
   "productName": "RISK WISE v2",
   "description": "Desktop GUI application for fully probabilistic climate risk assessment tool Climada. Provides a framework for users to combine exposure, hazard and vulnerability or impact data to calculate risk.",
   "author": "Sword Group <georgios.kalomalos@sword-group.com>",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "main": "build/electron.js",
   "homepage": ".",
@@ -14,7 +14,8 @@
     "start:electron": "npm run build && electron .",
     "quickstart": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder -w"
+    "dist": "electron-builder -w",
+    "publish": "electron-builder -w --publish always"
   },
   "dependencies": {
     "@emotion/react": "11.11.4",
@@ -78,9 +79,10 @@
     "artifactName": "RiskWiseInstaller-v${version}-Setup.${ext}",
     "publish": [
       {
-        "provider": "generic",
-        "url": "https://ath-git.swordgroup.lan/unu/climada-unu/-/releases",
-        "channel": "latest"
+        "provider": "github",
+        "owner": "CortoMaltese3",
+        "repo": "RISK_WISE_v2",
+        "releaseType": "release"
       }
     ],
     "generateUpdatesFilesForAllChannels": true,

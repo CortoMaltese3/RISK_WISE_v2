@@ -33,6 +33,7 @@ if (app.getGPUFeatureStatus().gpu_compositing.includes("disabled")) {
 }
 app.whenReady().then(async () => {
   createLoaderWindow(); // Create the loader window
+
   global.pythonProcess = createPythonProcess();
   await waitForPythonProcessReady(global.pythonProcess); // Wait for the Python process to be ready
   try {
@@ -43,6 +44,7 @@ app.whenReady().then(async () => {
   }
   loaderWindow.close(); // Close the loader window
   loaderWindow = null; // Clear the loader window reference
+  if (!isDevelopmentEnv()) autoUpdater.checkForUpdatesAndNotify();
   createMainWindow(); // Create the main application window
 });
 
@@ -332,16 +334,13 @@ ipcMain.on("reload", async () => {
   mainWindow.webContents.reloadIgnoringCache();
 });
 
-// Check for updates after the app is ready
-app.on("ready", () => {
-  if (!isDevelopmentEnv()) {
-    autoUpdater.checkForUpdatesAndNotify();
-  }
+// Auto-update diagnostics (useful in prod logs)
+autoUpdater.on("update-not-available", () => {
+  console.log("No update available");
 });
 
-autoUpdater.setFeedURL({
-  provider: "generic",
-  url: "https://github.com/CortoMaltese3/RISK_WISE_v2/releases",
+autoUpdater.on("download-progress", (p) => {
+  console.log(`Downloading: ${p.percent.toFixed(1)}% (${p.transferred}/${p.total})`);
 });
 
 // Listen for update-available event
@@ -355,15 +354,20 @@ autoUpdater.on("update-available", () => {
 
 // Listen for update-downloaded event
 autoUpdater.on("update-downloaded", () => {
-  dialog
-    .showMessageBox({
-      type: "info",
-      title: "Update Ready",
-      message: "Update downloaded. The app will restart to apply the update.",
-    })
-    .then(() => {
-      autoUpdater.quitAndInstall();
-    });
+  dialog.showMessageBox({
+    type: "info",
+    title: "Update ready",
+    message: "Update downloaded. Restart now to apply?",
+    buttons: ["Restart", "Later"],
+    defaultId: 0,
+    cancelId: 1,
+  }).then(({ response }) => {
+    if (response === 0) autoUpdater.quitAndInstall();
+  });
+});
+
+autoUpdater.on("error", (err) => {
+  console.error("AutoUpdater error:", err);
 });
 
 app.on("activate", () => {
