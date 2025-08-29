@@ -3,7 +3,7 @@
   "productName": "RISK WISE v2",
   "description": "Desktop GUI application for fully probabilistic climate risk assessment tool Climada. Provides a framework for users to combine exposure, hazard and vulnerability or impact data to calculate risk.",
   "author": "Sword Group <georgios.kalomalos@sword-group.com>",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "main": "build/electron.js",
   "homepage": ".",
@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "electron": "37.3.1",
+    "electron-log": "5.4.3",
     "electron-builder": "26.0.12",
     "eslint": "9.34.0",
     "eslint-plugin-react": "7.37.5",
