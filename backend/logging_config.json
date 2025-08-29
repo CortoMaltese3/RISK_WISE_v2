@@ -1,5 +1,5 @@
 {
   "filename": "app.log",
   "level": "INFO",
-  "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  "format": "%(asctime)s - %(levelname)s - [python] %(name)s - %(message)s"
 }
