@@ -1,14 +1,17 @@
+// electron.js
 const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const log = require("electron-log/main");
 
 global.pythonProcess = null;
 
 const basePath = app.getAppPath();
 let mainWindow;
 let loaderWindow;
+let userLogDir;
 
 const isDevelopmentEnv = () => {
   return !app.isPackaged;
@@ -17,8 +20,7 @@ const isDevelopmentEnv = () => {
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on("second-instance", (event, commandLine, workingDirectory) => {
-    // If second instance is instantiated, the app focuses on the current window.
+  app.on("second-instance", (_event, _commandLine, _workingDirectory) => {
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
@@ -31,21 +33,35 @@ if (!app.requestSingleInstanceLock()) {
 if (app.getGPUFeatureStatus().gpu_compositing.includes("disabled")) {
   app.disableHardwareAcceleration();
 }
+
 app.whenReady().then(async () => {
-  createLoaderWindow(); // Create the loader window
+  // Configure unified logging under per-user writable dir
+  userLogDir = path.join(app.getPath("userData"), "logs");
+  fs.mkdirSync(userLogDir, { recursive: true });
+  log.transports.file.resolvePathFn = () => path.join(userLogDir, "app.log");
+  log.transports.file.maxSize = 1024 * 1024; // 1MB rotation similar to Python
+  log.initialize();
+  autoUpdater.logger = log;
+  log.info("[electron] app start, version:", app.getVersion());
+  log.info("[electron] userData:", app.getPath("userData"));
+  log.info("[electron] appPath:", app.getAppPath());
+
+  createLoaderWindow();
 
   global.pythonProcess = createPythonProcess();
-  await waitForPythonProcessReady(global.pythonProcess); // Wait for the Python process to be ready
+  await waitForPythonProcessReady(global.pythonProcess);
   try {
     const result = await runPythonScript(mainWindow, "run_clear_temp_dir.py", {});
-    console.log("Result of clearing temp directory:", result);
+    log.info("[electron] cleared temp directory:", result);
   } catch (error) {
-    console.error("Error clearing temp directory:", error);
+    log.error("[electron] error clearing temp directory:", error);
   }
-  loaderWindow.close(); // Close the loader window
-  loaderWindow = null; // Clear the loader window reference
+
+  loaderWindow.close();
+  loaderWindow = null;
+
   if (!isDevelopmentEnv()) autoUpdater.checkForUpdatesAndNotify();
-  createMainWindow(); // Create the main application window
+  createMainWindow();
 });
 
 const createLoaderWindow = () => {
@@ -80,7 +96,7 @@ const waitForPythonProcessReady = (pythonProcess) => {
           resolve();
         }
       } catch (error) {
-        console.error("Error parsing Python stdout:", error);
+        // ignore non-JSON lines here, Python may print other output
       }
     };
     pythonProcess.stdout.on("data", handleData);
@@ -120,17 +136,22 @@ const createMainWindow = () => {
   if (isDevelopmentEnv()) {
     mainWindow.webContents.openDevTools();
   }
+
+  // Pipe renderer console messages into unified log
+  mainWindow.webContents.on("console-message", (_event, level, message, line, sourceId) => {
+    const lvl = level === 2 ? "warn" : level === 3 ? "error" : "info";
+    const text = `[renderer] ${message} (${sourceId}:${line})`;
+    if (lvl === "warn") log.warn(text);
+    else if (lvl === "error") log.error(text);
+    else log.info(text);
+  });
 };
 
 const runPythonScript = (mainWindow, scriptName, data) => {
   return new Promise((resolve, reject) => {
     let buffer = "";
 
-    const message = {
-      scriptName,
-      data,
-    };
-
+    const message = { scriptName, data };
     global.pythonProcess.stdin.write(JSON.stringify(message) + "\n");
 
     const handleData = (data) => {
@@ -155,7 +176,7 @@ const runPythonScript = (mainWindow, scriptName, data) => {
               }
             }
           } catch (error) {
-            console.error("Error parsing Python stdout:", error);
+            log.error("[electron] error parsing Python stdout:", error);
             reject(error);
           }
         }
@@ -174,35 +195,36 @@ const createPythonProcess = () => {
   const pythonExecutable = path.join(basePath, "climada_env", "python.exe");
 
   try {
-    const process = spawn(pythonExecutable, [scriptPath], {
+    const py = spawn(pythonExecutable, [scriptPath], {
       stdio: ["pipe", "pipe", "pipe", "ipc"],
+      env: { ...process.env, LOG_DIR: userLogDir },
     });
 
-    process.on("error", (error) => {
-      console.error("Error occurred during Python process creation:", error);
+    py.on("error", (error) => {
+      log.error("[electron] python spawn error:", error);
     });
 
-    process.stdout.on("data", (data) => {
-      console.log("Python stdout:", data.toString());
+    py.stderr.on("data", (data) => {
+      log.error(`[python] ${data.toString().trim()}`);
     });
 
-    process.stderr.on("data", (data) => {
-      console.log("Python stderr:", data.toString());
+    py.stderr.on("data", (data) => {
+      log.error(`[python] ${data.toString().trim()}`);
     });
 
-    return process;
+    return py;
   } catch (error) {
-    console.error("Error occurred during Python process creation:", error);
+    log.error("[electron] error during Python process creation:", error);
     throw error;
   }
 };
 
-ipcMain.handle("runPythonScript", async (_, { scriptName, data }) => {
+ipcMain.handle("runPythonScript", async (_evt, { scriptName, data }) => {
   try {
     const result = await runPythonScript(mainWindow, scriptName, data);
     return { success: true, result };
   } catch (error) {
-    console.error(error);
+    log.error("[electron] runPythonScript error:", error);
     return { success: false, error: error.message };
   }
 });
@@ -225,12 +247,12 @@ ipcMain.handle("fetch-report-dir", () => {
 ipcMain.handle("clear-temp-dir", async () => {
   try {
     const scriptName = "run_clear_temp_dir.py";
-    const data = {}; // assuming no additional data is required
+    const data = {};
     const result = await runPythonScript(mainWindow, scriptName, data);
-    console.log("Temporary directory cleared:", result);
+    log.info("[electron] temporary directory cleared:", result);
     return { success: true, result };
   } catch (error) {
-    console.error("Failed to clear temporary directory:", error);
+    log.error("[electron] failed to clear temporary directory:", error);
     return { success: false, error: error.message };
   }
 });
@@ -239,7 +261,6 @@ ipcMain.handle("clear-temp-dir", async () => {
 ipcMain.handle("save-screenshot", async (event, { blob, filePath }) => {
   const buffer = Buffer.from(blob, "base64");
 
-  // Ensure the directory exists
   const dir = path.dirname(filePath);
   fs.mkdir(dir, { recursive: true }, (err) => {
     if (err) {
@@ -247,7 +268,6 @@ ipcMain.handle("save-screenshot", async (event, { blob, filePath }) => {
       return;
     }
 
-    // Write the file
     fs.writeFile(filePath, buffer, (err) => {
       if (err) {
         event.sender.send("save-screenshot-reply", { success: false, error: err.message });
@@ -261,21 +281,13 @@ ipcMain.handle("save-screenshot", async (event, { blob, filePath }) => {
 // Handle folder copy request
 ipcMain.handle("copy-folder", async (event, { sourceFolder, destinationFolder }) => {
   try {
-    // Ensure the destination directory exists
     fs.mkdirSync(destinationFolder, { recursive: true });
-
-    // Read all files in the source folder
     const files = fs.readdirSync(sourceFolder);
-
-    // Loop through files and copy them
     for (const file of files) {
       const sourcePath = path.join(sourceFolder, file);
       const destinationPath = path.join(destinationFolder, file);
-
-      // Copy the file
       fs.copyFileSync(sourcePath, destinationPath);
     }
-
     event.sender.send("copy-folder-reply", { success: true, destinationFolder });
   } catch (error) {
     event.sender.send("copy-folder-reply", { success: false, error: error.message });
@@ -285,24 +297,20 @@ ipcMain.handle("copy-folder", async (event, { sourceFolder, destinationFolder })
 // Handle copy file from temp folder request
 ipcMain.handle("copy-file", async (event, { sourcePath, destinationPath }) => {
   try {
-    // Ensure the destination directory exists
     const dir = path.dirname(destinationPath);
     fs.mkdirSync(dir, { recursive: true });
-
-    // Copy the file
     fs.copyFileSync(sourcePath, destinationPath);
-
     event.sender.send("copy-file-reply", { success: true, destinationPath });
   } catch (error) {
     event.sender.send("copy-file-reply", { success: false, error: error.message });
   }
 });
 
-ipcMain.handle("open-report", async (event, reportPath) => {
+ipcMain.handle("open-report", async (_event, reportPath) => {
   try {
     await shell.openPath(reportPath);
   } catch (error) {
-    console.error("Failed to open report:", error);
+    log.error("[electron] failed to open report:", error);
   }
 });
 
@@ -311,7 +319,7 @@ ipcMain.on("minimize", () => {
 });
 
 ipcMain.on("shutdown", () => {
-  console.log("Shutting down application...");
+  log.info("[electron] shutting down application...");
 
   if (global.pythonProcess && !global.pythonProcess.killed) {
     global.pythonProcess.kill();
@@ -321,29 +329,27 @@ ipcMain.on("shutdown", () => {
 });
 
 ipcMain.on("reload", async () => {
-  console.log("Reload CLIMADA App...");
+  log.info("[electron] reload CLIMADA App...");
 
   try {
     const result = await runPythonScript(mainWindow, "run_clear_temp_dir.py", {});
-    console.log("Temporary directory cleared:", result);
+    log.info("[electron] temporary directory cleared:", result);
   } catch (error) {
-    console.error("Failed to clear temporary directory:", error);
+    log.error("[electron] failed to clear temporary directory:", error);
   }
 
-  // Reload the application
   mainWindow.webContents.reloadIgnoringCache();
 });
 
 // Auto-update diagnostics (useful in prod logs)
 autoUpdater.on("update-not-available", () => {
-  console.log("No update available");
+  log.info("[electron] no update available");
 });
 
 autoUpdater.on("download-progress", (p) => {
-  console.log(`Downloading: ${p.percent.toFixed(1)}% (${p.transferred}/${p.total})`);
+  log.info(`[electron] downloading ${p.percent.toFixed(1)}% (${p.transferred}/${p.total})`);
 });
 
-// Listen for update-available event
 autoUpdater.on("update-available", () => {
   dialog.showMessageBox({
     type: "info",
@@ -352,34 +358,33 @@ autoUpdater.on("update-available", () => {
   });
 });
 
-// Listen for update-downloaded event
 autoUpdater.on("update-downloaded", () => {
-  dialog.showMessageBox({
-    type: "info",
-    title: "Update ready",
-    message: "Update downloaded. Restart now to apply?",
-    buttons: ["Restart", "Later"],
-    defaultId: 0,
-    cancelId: 1,
-  }).then(({ response }) => {
-    if (response === 0) autoUpdater.quitAndInstall();
-  });
+  dialog
+    .showMessageBox({
+      type: "info",
+      title: "Update ready",
+      message: "Update downloaded. Restart now to apply?",
+      buttons: ["Restart", "Later"],
+      defaultId: 0,
+      cancelId: 1,
+    })
+    .then(({ response }) => {
+      if (response === 0) autoUpdater.quitAndInstall();
+    });
 });
 
 autoUpdater.on("error", (err) => {
-  console.error("AutoUpdater error:", err);
+  log.error("[electron] AutoUpdater error:", err);
 });
 
 app.on("activate", () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     createMainWindow();
   }
 });
 
 app.on("before-quit", () => {
-  console.log("Terminating Python process before app quits...");
+  log.info("[electron] terminating Python process before app quits...");
 
   if (global.pythonProcess && !global.pythonProcess.killed) {
     global.pythonProcess.kill();
