@@ -1,38 +1,51 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: "bug"
+assignees: ""
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**User Story**  
+As a user, I want the application to [expected behavior] so that [benefit].
 
-**To Reproduce**
-Steps to reproduce the behavior:
+**Description**  
+Provide a clear and concise description of what the bug is.
+
+**Steps to Reproduce**  
+Detail the exact steps to reproduce the issue.
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
 4. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Expected Behavior**  
+Describe what you expected to happen.
+
+**Actual Behavior**  
+Describe what actually happens.
+
+**Environment**
+
+- OS: [e.g. Windows 11, macOS 14]
+- App version: [e.g. 2.0.1]
+- Additional details (logs, screenshots, etc.)
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Acceptance Criteria**
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+- [ ] Bug is reproducible with the given steps
+- [ ] Fix resolves the described issue
+- [ ] Unit tests updated/added if needed
+- [ ] Application builds and runs successfully
 
-**Additional context**
-Add any other context about the problem here.
+**Pre-PR Checklist**
+
+- [ ] Update documentation if required
+- [ ] Ensure unit tests pass
+- [ ] Ensure linters and formatters pass
+- [ ] Verify the application builds and packages successfully
+- [ ] Update CHANGELOG.md and README.md if required
