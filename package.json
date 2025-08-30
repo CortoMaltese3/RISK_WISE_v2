@@ -33,6 +33,7 @@
     "d3-scale-chromatic": "3.1.0",
     "date-fns": "4.1.0",
     "electron-updater": "6.6.2",
+    "electron-log": "5.4.3",
     "file-saver": "2.0.5",
     "i18next": "25.4.2",
     "leaflet": "1.9.4",
