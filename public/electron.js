@@ -1,10 +1,9 @@
-// electron.js
 const { app, BrowserWindow, ipcMain, shell, dialog } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
-const log = require("electron-log/main");
+const log = require("electron-log");
 
 global.pythonProcess = null;
 
