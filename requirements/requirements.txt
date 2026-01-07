@@ -14,3 +14,11 @@ python-docx==1.1.2
 pywin==0.3.1
 
 climada==4.1.1
+
+
+
+climada==4.1.1
+docx2pdf==0.1.8
+python-docx==1.1.2
+docxtpl==0.18.0
+pywin==0.3.1
