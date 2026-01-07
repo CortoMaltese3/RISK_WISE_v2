@@ -1,12 +1,10 @@
-# data & temp(exposures, hazards, reports)
+# data & temp
 data/exposures
 data/reports
 data/temp
 data/unu
 climada_unu.db
 src/temp
-gadm41_EGY.gpkg
-gadm41_THA.gpkg
 
 # frontend
 node_modules
@@ -14,13 +12,15 @@ build
 dist
 
 # backend
-__pycache_
+__pycache__
 
 # logs
 logs/
 
 # environment
 climada_env
+climada_env_min
+climada_env_test
 
 # python
 *.pyc
@@ -37,7 +37,9 @@ docs/_build
 test
 test.ipynb
 changelog_generator.py
-translations.xlsx
 translation_validation.log
-translations.py
-dev/
+scripts
+notes.txt
+
+#certificates
+certs
