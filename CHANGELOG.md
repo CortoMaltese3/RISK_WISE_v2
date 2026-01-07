@@ -1,11 +1,66 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
-
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.0.6] - 2025-12-17
+
+### Added
+
+- Informative loader messages during application startup
+- Progress indicators for engine download and installation
+- Status updates for engine initialization and temporary file cleanup
+- Automatic engine download and installation for portable version users
+- Support for ZIP and 7Z portable distribution formats
+
+### Changed
+
+- Enhanced loading screen with real-time status updates
+- Improved user feedback during engine setup process
+
+### Fixed
+
+- Loader window overflow and scrollbar issues
+- Engine detection and installation flow for portable versions
+
+### Contributors
+
+- @CortoMaltese3
+
+## [2.0.5] - 2025-12-15
+
+### Added
+
+- Split application and engine installation process
+- Separate engine installation to preserve user data across updates
+- Reuse of downloaded engine archive to save bandwidth
+- New Windows installation process with modular engine setup
+
+### Changed
+
+- Split application data into immutable and persistent paths
+- Updated security and application dependencies
+
+### Fixed
+
+- Removed Windows code-sign disable flags to fix Electron icon fallback issue
+
+### Contributors
+
+- @CortoMaltese3
+
+## [2.0.4] - 2025-12-14
+
+### Changed
+
+- Split application and engine installation architecture
+
+### Contributors
+
+- @CortoMaltese3
 
 ## [2.0.3] - 2025-08-31
 
@@ -49,7 +104,7 @@ Changes:
 
 - Auto-update flow via `electron-builder` + `electron-updater` (GitHub provider).
 - Update dialogs and progress logging: `update-available`, `update-not-available`, `download-progress`, `update-downloaded`, `error`.
-- CI: GitHub Actions workflow to build & publish Windows NSIS releases on tag push (`.github/workflows/app_release.yml`).
+- CI: GitHub Actions workflow to build & publish Windows NSIS releases on tag push `.github/workflows/app_release.yml`).
 
 ### Changed
 
@@ -73,10 +128,10 @@ Changes:
   - Enabled `contextIsolation` and `sandbox` while disabling `nodeIntegration` for improved security.
   - Refactored `electron.js` for clarity and better handling of Python subprocess communication.
 - **Vite configuration**:
-  - Introduced `vite.config.mjs` with simplified `manualChunks` and modern build target (`es2022`).
-  - Disabled CSS code splitting (`cssCodeSplit: false`) to avoid multiple requests under `file://`.
-  - Conditional sourcemaps (`mode === "development"`) to prevent source exposure in production.
-- **HTML templates** (`index.html`, `loader.html`):
+  - Introduced `vite.config.mjs` with simplified `manualChunks` and modern build target `es2022`).
+  - Disabled CSS code splitting `cssCodeSplit: false`) to avoid multiple requests under `file://`.
+  - Conditional sourcemaps `mode === "development"`) to prevent source exposure in production.
+- **HTML templates** `index.html`, `loader.html`):
   - Added stricter Content-Security-Policy (CSP) meta tags.
   - Updated meta information and security-related headers to address Electron console warnings.
 
@@ -92,7 +147,7 @@ Changes:
 
 ### Fixed
 
-- File extension inconsistencies (`.js` → `.jsx`) to align with Vite import rules.
+- File extension inconsistencies `.js` → `.jsx`) to align with Vite import rules.
 - Dependency mismatches after migration (restored stable versions for React, Emotion, and Vite ecosystem).
 - Security warnings in Electron DevTools by adjusting preload and CSP settings.
 
